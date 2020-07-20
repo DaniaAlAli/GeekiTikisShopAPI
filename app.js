@@ -1,21 +1,30 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const slugify = require("slugify");
 
 //Data
 let mugs = require("./mugs");
+const { response } = require("express");
 
 //Create Express App instance
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.json());
 
-// app.get("/dania", (request, response) => {
-//   console.log("HII!");
-//   response.json({ message: "HELLO WORLD!" });
-// });
-
+// Mug List
 app.get("/mugs", (req, res) => {
   res.json(mugs);
+});
+
+//Mug create
+app.post("/mugs", (req, res) => {
+  const id = mugs[mugs.length - 1].id + 1;
+  const slug = slugify(req.body.name, { lower: true });
+  const newMug = { id, slug, ...req.body };
+  mugs.push(newMug);
+  res.status(201).json(newMug);
 });
 
 // Mug Delete
