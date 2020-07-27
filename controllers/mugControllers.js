@@ -1,46 +1,55 @@
 const slugify = require("slugify");
 
 //Data
-let mugs = require("../mugs");
+let mugs = require("../mugs"); //Delete it
+const { Mug } = require("../db/models");
+const { findByPk } = require("../db/models/Mug");
 
-exports.mugList = (req, res) => {
-  res.json(mugs);
-};
-
-exports.mugCreate = (req, res) => {
-  const id = mugs[mugs.length - 1].id + 1;
-  const slug = slugify(req.body.name, { lower: true });
-  const newMug = { id, slug, ...req.body };
-  mugs.push(newMug);
-
-  res.status(201).json(newMug);
-};
-
-exports.mugUpdate = (req, res) => {
-  // find the mug
-  const { mugID } = req.params;
-  const foundMug = mugs.find((mug) => mug.id === +mugID);
-
-  // check if mug exists
-  if (foundMug) {
-    for (const key in req.body) foundMug[key] = req.body[key];
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Mug Not Found" });
+exports.fetchMug = async (mugID, next) => {
+  try {
+    const mug = await Mug.findByPk(mugID);
+    return mug;
+  } catch (error) {
+    next(error);
   }
-
-  // fetch the data from the body
-  // Update the mug
 };
 
-exports.mugDelete = (req, res) => {
-  const { mugID } = req.params;
-  const foundMug = mugs.find((mug) => mug.id === +mugID);
+exports.mugList = async (req, res, next) => {
+  try {
+    const _mugs = await Mug.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    res.json(_mugs);
+  } catch (error) {
+    next(error);
+  }
+};
 
-  if (foundMug) {
-    mugs = mugs.filter((mug) => mug.id !== +mugID);
+exports.mugCreate = async (req, res, next) => {
+  try {
+    const newMug = await Mug.create(req.body);
+    res.status(201).json(newMug);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.mugUpdate = async (req, res, next) => {
+  console.log(" exports.mugUpdate - > req", req.mug);
+
+  try {
+    await req.mug.update(req.body);
     res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Mug Not Found" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.mugDelete = async (req, res, next) => {
+  try {
+    await req.mug.destroy();
+    res.status(204).end();
+  } catch (error) {
+    next(error);
   }
 };
