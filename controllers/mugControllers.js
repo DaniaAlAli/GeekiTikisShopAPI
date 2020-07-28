@@ -2,7 +2,7 @@ const slugify = require("slugify");
 
 //Data
 let mugs = require("../mugs"); //Delete it
-const { Mug } = require("../db/models");
+const { Mug, Vendor } = require("../db/models");
 const { findByPk } = require("../db/models/Mug");
 
 exports.fetchMug = async (mugID, next) => {
@@ -17,18 +17,14 @@ exports.fetchMug = async (mugID, next) => {
 exports.mugList = async (req, res, next) => {
   try {
     const _mugs = await Mug.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+      attributes: { exclude: ["vendorId", "createdAt", "updatedAt"] },
+      include: {
+        model: Vendor,
+        as: "vendor",
+        attributes: ["name"],
+      },
     });
     res.json(_mugs);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.mugCreate = async (req, res, next) => {
-  try {
-    const newMug = await Mug.create(req.body);
-    res.status(201).json(newMug);
   } catch (error) {
     next(error);
   }
@@ -38,6 +34,9 @@ exports.mugUpdate = async (req, res, next) => {
   console.log(" exports.mugUpdate - > req", req.mug);
 
   try {
+    req.body.image = `${req.protocol}://${req.get("host")}/media/${
+      req.file.filename
+    }`;
     await req.mug.update(req.body);
     res.status(204).end();
   } catch (error) {

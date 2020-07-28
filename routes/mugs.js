@@ -1,13 +1,23 @@
 const express = require("express");
+const multer = require("multer");
+const upload = require("../middleware/multer");
 
 //controllers
 const {
-  mugCreate,
   mugList,
   mugUpdate,
   mugDelete,
   fetchMug,
 } = require("../controllers/mugControllers");
+
+const storage = multer.diskStorage({
+  destination: "./media",
+  filename: (req, file, cb) => {
+    cb(null, `${+new Date()}${file.originalname}`);
+  }, //cb = callback function
+});
+
+// const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -28,11 +38,8 @@ router.param("mugID", async (req, res, next, mugID) => {
 // Mug List
 router.get("/", mugList);
 
-// Mug create
-router.post("/", mugCreate);
-
 // Mug update
-router.put("/:mugID", mugUpdate);
+router.put("/:mugID", upload.single("image"), mugUpdate);
 
 // Mug Delete
 router.delete("/:mugID", mugDelete);
