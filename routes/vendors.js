@@ -11,6 +11,7 @@ const {
   fetchVendor,
   mugCreate,
 } = require("../controllers/vendorControllers");
+const passport = require("passport");
 
 const storage = multer.diskStorage({
   destination: "./media",
@@ -40,7 +41,12 @@ router.param("vendorId", async (req, res, next, vendorId) => {
 router.get("/", vendorList);
 
 // vendor create
-router.post("/", upload.single("image"), vendorCreate);
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  vendorCreate
+);
 
 // vendor update
 router.put("/:vendorId", upload.single("image"), vendorUpdate);

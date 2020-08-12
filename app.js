@@ -13,7 +13,7 @@ const mugRoutes = require("./routes/mugs");
 const userRoutes = require("./routes/users");
 
 // Strategies
-const { localStrategy } = require("./middleware/passport");
+const { localStrategy, jwtStrategy } = require("./middleware/passport");
 
 // Create Express App instance
 const app = express();
@@ -22,6 +22,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 passport.use(localStrategy);
+passport.use(jwtStrategy);
+
 // Routers
 app.use("/vendors", vendorRoutes);
 app.use("/mugs", mugRoutes);
@@ -43,7 +45,7 @@ app.use((err, req, res, next) => {
 
 const run = async () => {
   try {
-    await db.sync({ alter: true });
+    await db.sync();
   } catch (error) {
     console.log("error:", error);
   }
