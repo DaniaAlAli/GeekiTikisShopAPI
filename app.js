@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
+const passport = require("passport");
 
 // DB
 const db = require("./db");
@@ -11,12 +12,16 @@ const vendorRoutes = require("./routes/vendors");
 const mugRoutes = require("./routes/mugs");
 const userRoutes = require("./routes/users");
 
+// Strategies
+const { localStrategy } = require("./middleware/passport");
+
 // Create Express App instance
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use(passport.initialize());
+passport.use(localStrategy);
 // Routers
 app.use("/vendors", vendorRoutes);
 app.use("/mugs", mugRoutes);
