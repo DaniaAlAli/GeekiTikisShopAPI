@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
 
 const run = async () => {
   try {
-    await db.sync({ alter: true });
+    await db.sync({ force: true });
   } catch (error) {
     console.log("error:", error);
   }
