@@ -21,7 +21,7 @@ exports.vendorList = async (req, res, next) => {
         {
           model: Mug,
           as: "mugs",
-          attributes: { exclude: ["createdAt", "updatedAt"] },
+          attributes: ["id"],
         },
       ],
     });
