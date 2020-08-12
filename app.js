@@ -9,6 +9,7 @@ const db = require("./db");
 // Routes
 const vendorRoutes = require("./routes/vendors");
 const mugRoutes = require("./routes/mugs");
+const userRoutes = require("./routes/users");
 
 // Create Express App instance
 const app = express();
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 app.use("/vendors", vendorRoutes);
 app.use("/mugs", mugRoutes);
 app.use("/media", express.static(path.join(__dirname, "media")));
+app.use(userRoutes);
 
 //Not Found Path
 app.use((req, res, next) => {
