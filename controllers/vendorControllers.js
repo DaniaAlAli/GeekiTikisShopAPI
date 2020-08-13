@@ -56,11 +56,19 @@ exports.vendorCreate = async (req, res, next) => {
 
 exports.vendorUpdate = async (req, res, next) => {
   try {
-    req.body.image = `${req.protocol}://${req.get("host")}/media/${
-      req.file.filename
-    }`;
-    await req.vendor.update(req.body);
-    res.status(204).end();
+    if ((req.user.role === "admin" || req.user, id === req.vendor.userId)) {
+      if (req.file) {
+        req.body.image = `${req.protocol}://${req.get("host")}/media/${
+          req.file.filename
+        }`;
+      }
+      await req.vendor.update(req.body);
+      res.status(204).end();
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
+    }
   } catch (error) {
     next(error);
   }
@@ -68,8 +76,14 @@ exports.vendorUpdate = async (req, res, next) => {
 
 exports.vendorDelete = async (req, res, next) => {
   try {
-    await req.vendor.destroy();
-    res.status(204).end();
+    if ((req.user.role === "admin" || req.user, id === req.vendor.userId)) {
+      await req.vendor.destroy();
+      res.status(204).end();
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
+    }
   } catch (error) {
     next(error);
   }
@@ -77,14 +91,20 @@ exports.vendorDelete = async (req, res, next) => {
 
 exports.mugCreate = async (req, res, next) => {
   try {
-    if (req.file) {
-      req.body.image = `${req.protocol}://${req.get("host")}/media/${
-        req.file.filename
-      }`;
+    if ((req.user.role === "admin" || req.user, id === req.vendor.userId)) {
+      if (req.file) {
+        req.body.image = `${req.protocol}://${req.get("host")}/media/${
+          req.file.filename
+        }`;
+      }
+      req.body.vendorId = req.vendor.id;
+      const newMug = await Mug.create(req.body);
+      res.status(201).json(newMug);
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
     }
-    req.body.vendorId = req.vendor.id;
-    const newMug = await Mug.create(req.body);
-    res.status(201).json(newMug);
   } catch (error) {
     next(error);
   }

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { JWT_EXPIRATION_MS, JWT_SECRET } = require("../config/keys");
 
 //Modals
-const { user, User } = require("../db/models");
+const { user, User, Vendor } = require("../db/models");
 
 exports.signup = async (req, res, next) => {
   try {
@@ -19,6 +19,7 @@ exports.signup = async (req, res, next) => {
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       role: newUser.role,
+      vendorSlug = null,
       exp: Date.now() + JWT_EXPIRATION_MS,
     };
     const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
@@ -29,7 +30,8 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.signin = async (req, res, next) => {
-  console.log("req", req);
+  const { user } = req;
+  const vendor = await Vendor.findOne({ where: { userId: user.id } });
   const payload = {
     id: user.id,
     username: user.username,
@@ -37,6 +39,7 @@ exports.signin = async (req, res, next) => {
     firstName: user.firstName,
     lastName: user.lastName,
     role: user.role,
+    vendorSlug: vendor.slug ? vendor.slug : null,
     exp: Date.now() + JWT_EXPIRATION_MS,
   };
   const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);

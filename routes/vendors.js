@@ -49,12 +49,26 @@ router.post(
 );
 
 // vendor update
-router.put("/:vendorId", upload.single("image"), vendorUpdate);
+router.put(
+  "/:vendorId",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  vendorUpdate
+);
 
 // vendor Delete
-router.delete("/:vendorId", vendorDelete);
+router.delete(
+  "/:vendorId",
+  passport.authenticate("jwt", { session: false }),
+  vendorDelete
+);
 
 // Mug create
-router.post("/:vendorId/mugs", upload.single("image"), mugCreate);
+router.post(
+  "/:vendorId/mugs",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  mugCreate
+);
 
 module.exports = router;
