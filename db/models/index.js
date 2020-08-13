@@ -3,12 +3,16 @@ const Mug = require("./Mug");
 const User = require("./User");
 
 //A Vendor has Many mugs
-Vendor.hasMany(Mug, { as: "mugs", foreignKey: "vendorId", allowNull: false });
+Vendor.hasMany(Mug, {
+  as: "mugs",
+  foreignKey: "vendorId",
+  allowNull: false,
+});
 
 Mug.belongsTo(Vendor, { as: "vendor" });
 
-module.exports = {
-  Vendor,
-  Mug,
-  User,
-};
+User.hasOne(Vendor, { foreignKey: "userId" });
+
+Vendor.belongsTo(User, { as: "user" });
+
+module.exports = { Vendor, Mug, User };
