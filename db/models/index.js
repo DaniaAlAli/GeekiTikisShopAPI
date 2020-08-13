@@ -13,6 +13,6 @@ Mug.belongsTo(Vendor, { as: "vendor" });
 
 User.hasOne(Vendor, { foreignKey: "userId" });
 
-Vendor.belongsTo(User, { as: "user" });
+Vendor.belongsTo(User, { as: "user", foreignKey: "userId" });
 
 module.exports = { Vendor, Mug, User };
