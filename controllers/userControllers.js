@@ -19,7 +19,7 @@ exports.signup = async (req, res, next) => {
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       role: newUser.role,
-      expires: Date.now() + JWT_EXPIRATION_MS,
+      exp: Date.now() + JWT_EXPIRATION_MS,
     };
     const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
     res.status(201).json({ token });
@@ -37,7 +37,7 @@ exports.signin = async (req, res, next) => {
     firstName: user.firstName,
     lastName: user.lastName,
     role: user.role,
-    expires: Date.now() + JWT_EXPIRATION_MS,
+    exp: Date.now() + JWT_EXPIRATION_MS,
   };
   const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
   res.json({ token });
