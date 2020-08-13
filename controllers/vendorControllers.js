@@ -33,9 +33,20 @@ exports.vendorList = async (req, res, next) => {
 
 exports.vendorCreate = async (req, res, next) => {
   try {
-    req.body.image = `${req.protocol}://${req.get("host")}/media/${
-      req.file.filename
-    }`;
+    const foundVendor = await Vendor.findOne({
+      where: { userId: req.user.id },
+    });
+    if (!foundVendor) {
+      const err = new Error("you already have a vendor");
+      err.status = 403;
+      next(err);
+    }
+    if (req.file) {
+      req.body.image = `${req.protocol}://${req.get("host")}/media/${
+        req.file.filename
+      }`;
+    }
+    req.body.userId = req.user.id;
     const newVendor = await Vendor.create(req.body);
     res.status(201).json(newVendor);
   } catch (error) {
